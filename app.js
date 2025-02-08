@@ -2,8 +2,11 @@ import express from 'express';
 import cors from "cors";
 import  { createServer } from "http";
 import { Server } from 'socket.io';
+// import dotenv from 'dotenv';
 
-const port = 3000; //port
+// dotenv.config(); 
+
+const port = 3000;
 const app = express();
 
 //http server
@@ -12,14 +15,14 @@ const server = createServer(app);
 //websocket server using socket.io
 const io = new Server(server, {
   cors: {
-    origin: import.meta.env.VITE_FRONTEND_URL,  // vercel link of frontend
+    origin: "https://client-chat-app-chi.vercel.app",  
     methods: ["GET", "POST"],
     credentials: true,
   }},
 );
 
 app.use(cors({
-  origin: import.meta.env.VITE_FRONTEND_URL,
+  origin: "https://client-chat-app-chi.vercel.app" ,
   methods:["GET" , "POST"],
   credentials: true,
 }));

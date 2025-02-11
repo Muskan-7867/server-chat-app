@@ -1,3 +1,4 @@
+// Backend: server.js
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
@@ -5,15 +6,11 @@ import { Server } from "socket.io";
 import dotenv from "dotenv";
 dotenv.config();
 
-
 const port = 3000;
 const app = express();
 const server = createServer(app);
 
-const allowedOrigins = [
-  process.env.VITE_FRONTEND_URL || "http://localhost:5173",
-];
-
+const allowedOrigins = [process.env.VITE_FRONTEND_URL || "http://localhost:5173"];
 
 app.use(
   cors({
@@ -28,7 +25,7 @@ const io = new Server(server, {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
-    transports: ["websocket", "polling"], 
+    transports: ["websocket", "polling"],
   },
 });
 
@@ -37,13 +34,16 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("new User connected:", socket.id);
-  //every user have new unique socket id
-   io.emit('your-socket-id',socket.id)
+  console.log("New User connected:", socket.id);
+  
+  socket.on("join_room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
+    io.to(room).emit("user_joined", { userId: socket.id, room });
+  });
 
-  socket.on("send_message", (data) => {
-    io.emit("receive_message", data);
-    io.emit("after-send-sockerid", socket.id)
+  socket.on("send_message", ({ message, room, username }) => {
+    io.to(room).emit("receive_message", { message, sender: socket.id, username });
   });
 
   socket.on("disconnect", () => {
@@ -51,15 +51,6 @@ io.on("connection", (socket) => {
   });
 });
 
-// Ensure the server starts properly
-const startServer = async () => {
-  try {
-    server.listen(port, () => {
-      console.log(`Chat app server is running on ${port}`);
-    });
-  } catch (error) {
-    console.error("Error starting server:", error);
-  }
-};
-
-startServer();
+server.listen(port, () => {
+  console.log(`Chat app server is running on ${port}`);
+});

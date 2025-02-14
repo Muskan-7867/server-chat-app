@@ -11,7 +11,7 @@ const server = createServer(app);
 
 const allowedOrigins = [
   "https://client-chat-nine.vercel.app",
-  "https://server-chat-app-1.onrender.com",
+  "https://server-chat-9n92.onrender.com/",
 ];
 
 app.use(
@@ -50,13 +50,13 @@ io.on("connection", (socket) => {
   });
 
   //listen for typing event
-  ocket.on("user_typing", ({ room, username }) => {
-    io.to(room).emit("user_typing", { username });
-  });
+  socket.on("user_typing", ({room, username}) => {
+    io.to(room).emit("user_typing", {username})
+  })
 
-  socket.on("user_stopped_typing", ({ room }) => {
-    io.to(room).emit("user_stopped_typing");
-  });
+  socket.on("user_stopped_typing", ({room}) => {
+    io.to(room).emit("user_stopped_typing")
+  })
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);

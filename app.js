@@ -49,6 +49,15 @@ io.on("connection", (socket) => {
     io.to(room).emit("receive_message", { message, sender: socket.id, username });
   });
 
+  //listen for typing event
+  ocket.on("user_typing", ({ room, username }) => {
+    io.to(room).emit("user_typing", { username });
+  });
+
+  socket.on("user_stopped_typing", ({ room }) => {
+    io.to(room).emit("user_stopped_typing");
+  });
+
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
   });

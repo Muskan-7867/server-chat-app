@@ -1,4 +1,3 @@
-// Backend: server.js
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
@@ -10,7 +9,10 @@ const port = 3000;
 const app = express();
 const server = createServer(app);
 
-const allowedOrigins = [  "https://client-chat-nine.vercel.app"];
+const allowedOrigins = [
+  "https://client-chat-nine.vercel.app",
+  "https://server-chat-app-1.onrender.com",
+];
 
 app.use(
   cors({
@@ -35,14 +37,15 @@ app.get("/", (req, res) => {
 
 io.on("connection", (socket) => {
   console.log("New User connected:", socket.id);
-  
-  socket.on("join_room", (room) => {
+
+  socket.on("join_room", ({ room, username }) => {
     socket.join(room);
     console.log(`User ${socket.id} joined room: ${room}`);
-    io.to(room).emit("user_joined", { userId: socket.id, room });
+    io.to(room).emit("user_joined", { userId: socket.id, room, username });
   });
 
   socket.on("send_message", ({ message, room, username }) => {
+    console.log(`Received message from ${username}: ${message} in room ${room}`);
     io.to(room).emit("receive_message", { message, sender: socket.id, username });
   });
 

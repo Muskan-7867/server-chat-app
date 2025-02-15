@@ -44,10 +44,18 @@ io.on("connection", (socket) => {
     io.to(room).emit("user_joined", { userId: socket.id, room, username });
   });
 
-  socket.on("send_message", ({ message, room, username }) => {
+  socket.on("send_message", ({ message, room, username, timestamp }) => {
+    const messageWithTimestamp = {
+      message,
+      sender: socket.id,
+      username,
+      timestamp: timestamp || new Date().toISOString(), // Ensure a timestamp is always present
+    };
+  
     console.log(`Received message from ${username}: ${message} in room ${room}`);
-    io.to(room).emit("receive_message", { message, sender: socket.id, username });
+    io.to(room).emit("receive_message", messageWithTimestamp);
   });
+  
 
   //listen for typing event
   socket.on("user_typing", ({room, username}) => {

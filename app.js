@@ -10,8 +10,9 @@ const app = express();
 const server = createServer(app);
 
 const allowedOrigins = [
-  "https://client-chat-nine.vercel.app",
-  "https://server-chat-9n92.onrender.com/",
+  process.env.VITE_FRONTEND_URL,
+  process.env.VITE_BACKEND_URL
+,
 ];
 
 app.use(

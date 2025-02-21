@@ -45,12 +45,13 @@ io.on("connection", (socket) => {
     io.to(room).emit("user_joined", { userId: socket.id, room, username });
   });
 
-  socket.on("send_message", ({ message, room, username, timestamp }) => {
+  socket.on("send_message", ({ message, room, username, timestamp, image }) => {
     const messageWithTimestamp = {
       message,
       sender: socket.id,
       username,
-      timestamp: timestamp || new Date().toISOString(), // Ensure a timestamp is always present
+      timestamp: timestamp || new Date().toISOString(), 
+      image// Ensure a timestamp is always present
     };
   
     console.log(`Received message from ${username}: ${message} in room ${room}`);

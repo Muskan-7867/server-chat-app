@@ -57,6 +57,15 @@ io.on("connection", (socket) => {
     console.log(`Received message from ${username}: ${message} in room ${room}`);
     io.to(room).emit("receive_message", messageWithTimestamp);
   });
+
+  socket.on("message_seen", ({ messageId, room, username }) => {
+    // Update the message's seen status on the server
+    const message = message.find((msg) => msg.id === messageId);
+    if (message && !message.seenBy.includes(username)) {
+      message.seenBy.push(username);
+      io.to(room).emit("message_seen", { messageId, seenBy: message.seenBy });
+    }
+  });
   
 
   //listen for typing event
